@@ -9,13 +9,14 @@ Name:           ipu6-camera-hal
 Summary:        Hardware abstraction layer for Intel IPU6
 URL:            https://github.com/intel/ipu6-camera-hal
 Version:        0.0
-Release:        9.%{commitdate}git%{shortcommit}%{?dist}
+Release:        10.%{commitdate}git%{shortcommit}%{?dist}
 License:        Apache-2.0
 
 Source0:        https://github.com/intel/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source1:        60-intel-ipu6.rules
 Source2:        v4l2-relayd-adl
 Source3:        v4l2-relayd-tgl
+Source4:        intel_ipu6_isys.conf
 
 Patch1:         0001-Fix-build-error-due-to-missing-cstdint.h.patch
 
@@ -85,6 +86,10 @@ sed -i -e "s|}/lib64|}/lib64/ipu6|" %{buildroot}%{_libdir}/pkgconfig/libcamhal.p
 install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_datadir}/defaults/etc/ipu6ep/v4l2-relayd
 install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_datadir}/defaults/etc/ipu6/v4l2-relayd
 
+# Make kmod-intel-ipu6 use /dev/video7 leaving /dev/video0 for loopback
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_modprobedir}/intel_ipu6_isys.conf
+
+
 %post
 /usr/bin/udevadm control --reload
 /usr/bin/udevadm trigger /sys/devices/pci0000:00/0000:00:05.0
@@ -95,6 +100,7 @@ install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_datadir}/defaults/etc/ipu6/v4l2-
 %{_libdir}/*/libcamhal.so
 %{_libdir}/libcamhal.so
 %{_datadir}/defaults/etc/*
+%{_modprobedir}/intel_ipu6_isys.conf
 %{_udevrulesdir}/60-intel-ipu6.rules
 
 
@@ -104,7 +110,10 @@ install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_datadir}/defaults/etc/ipu6/v4l2-
 
 
 %changelog
-*Mon May 08 2023 Kate Hsuan <hpa@redhat.com> - 0.0-9.20221112gitcc0b859
+* Mon May 15 2023 Hans de Goede <hdegoede@redhat.com> - 0.0-10.20221112gitcc0b859
+- Add intel_ipu6_isys.conf to make ipu6-driver not clobber /dev/video0
+
+* Mon May 08 2023 Kate Hsuan <hpa@redhat.com> - 0.0-9.20221112gitcc0b859
 - Fix settings for Tiger lake CPU
 
 * Wed Mar 22 2023 Kate Hsuan <hpa@redhat.com> - 0.0-8.20221112gitcc0b859
