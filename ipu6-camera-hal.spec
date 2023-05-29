@@ -9,7 +9,7 @@ Name:           ipu6-camera-hal
 Summary:        Hardware abstraction layer for Intel IPU6
 URL:            https://github.com/intel/ipu6-camera-hal
 Version:        0.0
-Release:        10.%{commitdate}git%{shortcommit}%{?dist}
+Release:        11.%{commitdate}git%{shortcommit}%{?dist}
 License:        Apache-2.0
 
 Source0:        https://github.com/intel/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
@@ -92,7 +92,9 @@ install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_modprobedir}/intel_ipu6_isys.con
 
 %post
 /usr/bin/udevadm control --reload
-/usr/bin/udevadm trigger /sys/devices/pci0000:00/0000:00:05.0
+if [ -d /sys/devices/pci0000:00/0000:00:05.0 ]; then
+    /usr/bin/udevadm trigger /sys/devices/pci0000:00/0000:00:05.0
+fi
 
 
 %files
@@ -110,6 +112,9 @@ install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_modprobedir}/intel_ipu6_isys.con
 
 
 %changelog
+* Mon May 29 2023 Kate Hsuan <hpa@redhat.com> - 0.0-11.20221112gitcc0b859
+- Add a sysfs path check for rpm-ostree since udev is unable to access in a container
+
 * Mon May 15 2023 Hans de Goede <hdegoede@redhat.com> - 0.0-10.20221112gitcc0b859
 - Add intel_ipu6_isys.conf to make ipu6-driver not clobber /dev/video0
 
