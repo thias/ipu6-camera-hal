@@ -9,7 +9,7 @@ Name:           ipu6-camera-hal
 Summary:        Hardware abstraction layer for Intel IPU6
 URL:            https://github.com/intel/ipu6-camera-hal
 Version:        0.0
-Release:        11.%{commitdate}git%{shortcommit}%{?dist}
+Release:        12.%{commitdate}git%{shortcommit}%{?dist}
 License:        Apache-2.0
 
 Source0:        https://github.com/intel/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
@@ -91,8 +91,10 @@ install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_modprobedir}/intel_ipu6_isys.con
 
 
 %post
-/usr/bin/udevadm control --reload
-if [ -d /sys/devices/pci0000:00/0000:00:05.0 ]; then
+# skip triggering if udevd isn't even accessible, e.g. containers or
+# rpm-ostree-based systems
+if [ -S /run/udev/control ]; then
+    /usr/bin/udevadm control --reload
     /usr/bin/udevadm trigger /sys/devices/pci0000:00/0000:00:05.0
 fi
 
@@ -112,6 +114,9 @@ fi
 
 
 %changelog
+* Tue May 30 2023 Kate Hsuan <hpa@redhat.com> - 0.0-12.20221112gitcc0b859
+- Fix 11 and skip udev command for container and rpm-ostree environments
+
 * Mon May 29 2023 Kate Hsuan <hpa@redhat.com> - 0.0-11.20221112gitcc0b859
 - Add a sysfs path check for rpm-ostree since udev is unable to access in a container
 
