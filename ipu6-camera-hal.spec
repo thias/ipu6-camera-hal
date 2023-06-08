@@ -9,7 +9,7 @@ Name:           ipu6-camera-hal
 Summary:        Hardware abstraction layer for Intel IPU6
 URL:            https://github.com/intel/ipu6-camera-hal
 Version:        0.0
-Release:        12.%{commitdate}git%{shortcommit}%{?dist}
+Release:        13.%{commitdate}git%{shortcommit}%{?dist}
 License:        Apache-2.0
 
 Source0:        https://github.com/intel/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
@@ -114,6 +114,9 @@ fi
 
 
 %changelog
+* Thu Jun  8 2023 Hans de Goede <hdegoede@redhat.com> - 0.0-13.20221112gitcc0b859
+- Add Raptor Lake IPU6EP PCI-id to 60-intel-ipu6.rules
+
 * Tue May 30 2023 Kate Hsuan <hpa@redhat.com> - 0.0-12.20221112gitcc0b859
 - Fix 11 and skip udev command for container and rpm-ostree environments
 
