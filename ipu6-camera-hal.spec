@@ -1,5 +1,5 @@
-%global commit cc0b859daeb5fdcdf23ed066ce0b6e313225fbb1
-%global commitdate 20221112
+%global commit 884b81aae0ea19a974eb8ccdaeef93038136bdd4
+%global commitdate 20230208
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 # We want to specify multiple separate build-dirs for the different variants
@@ -9,7 +9,7 @@ Name:           ipu6-camera-hal
 Summary:        Hardware abstraction layer for Intel IPU6
 URL:            https://github.com/intel/ipu6-camera-hal
 Version:        0.0
-Release:        14.%{commitdate}git%{shortcommit}%{?dist}
+Release:        15.%{commitdate}git%{shortcommit}%{?dist}
 License:        Apache-2.0
 
 Source0:        https://github.com/intel/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
@@ -18,7 +18,7 @@ Source2:        v4l2-relayd-adl
 Source3:        v4l2-relayd-tgl
 Source4:        intel_ipu6_isys.conf
 
-Patch1:         0001-Fix-build-error-due-to-missing-cstdint.h.patch
+# Patches
 
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  ipu6-camera-bins-devel
@@ -114,6 +114,9 @@ fi
 
 
 %changelog
+* Tue Aug 08 2023 Kate Hsuan <hpa@redhat.com> - 0.0-15.20230208git884b81a
+- Updated to commit 884b81aae0ea19a974eb8ccdaeef93038136bdd4
+
 * Thu Aug 03 2023 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 0.0-14.20221112gitcc0b859
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
 
