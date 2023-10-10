@@ -9,7 +9,7 @@ Name:           ipu6-camera-hal
 Summary:        Hardware abstraction layer for Intel IPU6
 URL:            https://github.com/intel/ipu6-camera-hal
 Version:        0.0
-Release:        15.%{commitdate}git%{shortcommit}%{?dist}
+Release:        16.%{commitdate}git%{shortcommit}%{?dist}
 License:        Apache-2.0
 
 Source0:        https://github.com/intel/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
@@ -114,6 +114,10 @@ fi
 
 
 %changelog
+* Tue Oct 10 2023 Hans de Goede <hdegoede@redhat.com> - 0.0-16.20230208git884b81a
+- Update /lib/modprobe.d/intel_ipu6_isys.conf for newer versions of
+  intel-ipu6-kmod creating up to 8 /dev/video# nodes
+
 * Tue Aug 08 2023 Kate Hsuan <hpa@redhat.com> - 0.0-15.20230208git884b81a
 - Updated to commit 884b81aae0ea19a974eb8ccdaeef93038136bdd4
 
