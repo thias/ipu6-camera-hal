@@ -1,22 +1,24 @@
-# Tiger Lake
-SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x9a19", GOTO="ipu6"
-# Alder Lake-N
-SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x465d", GOTO="ipu6ep"
-# Alder Lake-P
-SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x462e", GOTO="ipu6ep"
-# Raptor Lake-P
-SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0xa75d", GOTO="ipu6ep"
-
+# See intel-ipu6-kmod/ipu6-drivers/drivers/media/pci/intel/ipu.h for device IDs
+SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x9a19", GOTO="ipu_tgl" # Tiger Lake
+SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x465d", GOTO="ipu_adl" # Alder Lake N
+SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x462e", GOTO="ipu_adl" # Alder Lake P
+SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0xa75d", GOTO="ipu_adl" # Raptor Lake P
+SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x7d19", GOTO="ipu_mtl" # Meteor Lake
 GOTO="ipu6_end"
 
-LABEL="ipu6"
-RUN+="/bin/ln -sf /usr/lib64/ipu6/libcamhal.so /run/libcamhal.so"
-RUN+="/bin/ln -sf /usr/share/defaults/etc/ipu6/v4l2-relayd /run/v4l2-relayd"
+LABEL="ipu_tgl"
+RUN+="/bin/ln -sf /usr/lib64/ipu_tgl/libcamhal.so /run/libcamhal.so"
+RUN+="/bin/ln -sf /usr/share/defaults/etc/ipu_tgl/v4l2-relayd /run/v4l2-relayd"
 GOTO="ipu6_end"
 
-LABEL="ipu6ep"
-RUN+="/bin/ln -sf /usr/lib64/ipu6ep/libcamhal.so /run/libcamhal.so"
-RUN+="/bin/ln -sf /usr/share/defaults/etc/ipu6ep/v4l2-relayd /run/v4l2-relayd"
+LABEL="ipu_adl"
+RUN+="/bin/ln -sf /usr/lib64/ipu_adl/libcamhal.so /run/libcamhal.so"
+RUN+="/bin/ln -sf /usr/share/defaults/etc/ipu_adl/v4l2-relayd /run/v4l2-relayd"
+GOTO="ipu6_end"
+
+LABEL="ipu_mtl"
+RUN+="/bin/ln -sf /usr/lib64/ipu_mtl/libcamhal.so /run/libcamhal.so"
+RUN+="/bin/ln -sf /usr/share/defaults/etc/ipu_mtl/v4l2-relayd /run/v4l2-relayd"
 GOTO="ipu6_end"
 
 LABEL="ipu6_end"

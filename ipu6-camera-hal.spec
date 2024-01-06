@@ -1,5 +1,5 @@
-%global commit 884b81aae0ea19a974eb8ccdaeef93038136bdd4
-%global commitdate 20230208
+%global commit 9fa05a90886d399ad3dda4c2ddc990642b3d20c9
+%global commitdate 20230925
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
 # We want to specify multiple separate build-dirs for the different variants
@@ -15,16 +15,14 @@ License:        Apache-2.0
 Source0:        https://github.com/intel/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source1:        60-intel-ipu6.rules
 Source2:        v4l2-relayd-adl
-Source3:        v4l2-relayd-tgl
-Source4:        intel_ipu6_isys.conf
-
-# Patches
+Source3:        v4l2-relayd-mtl
+Source4:        v4l2-relayd-tgl
+Source5:        intel_ipu6_isys.conf
 
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  ipu6-camera-bins-devel
 BuildRequires:  cmake
-BuildRequires:  gcc
-BuildRequires:  g++
+BuildRequires:  gcc-c++
 BuildRequires:  expat-devel
 
 ExclusiveArch:  x86_64
@@ -47,15 +45,22 @@ This provides the necessary header files for IPU6 HAL development.
 
 
 %build
-for i in ipu6 ipu6ep; do
+sed -i -e 's|DESTINATION lib/|DESTINATION lib64/|g' CMakeLists.txt
+for i in ipu_adl ipu_mtl ipu_tgl; do
+  [ "$i" = "ipu_adl" ] && IPU_VERSION="ipu6ep"
+  [ "$i" = "ipu_mtl" ] && IPU_VERSION="ipu6epmtl"
+  [ "$i" = "ipu_tgl" ] && IPU_VERSION="ipu6"
   export PKG_CONFIG_PATH=%{_libdir}/$i/pkgconfig/
   export LDFLAGS="$RPM_LD_FLAGS -Wl,-rpath=%{_libdir}/$i"
-  sed -i.orig "s|/usr/share/defaults/etc/camera/|/usr/share/defaults/etc/$i/|g" \
+  sed -i.orig \
+    "s|/usr/share/defaults/etc/camera/|/usr/share/defaults/etc/$i/|g" \
     src/platformdata/PlatformData.h
   mkdir $i && pushd $i
-  %cmake -DCMAKE_BUILD_TYPE=Release -DIPU_VER=$i \
-         -DENABLE_VIRTUAL_IPU_PIPE=OFF -DUSE_PG_LITE_PIPE=ON \
-         -DUSE_STATIC_GRAPH=OFF ..
+  %cmake -DCMAKE_BUILD_TYPE=Release \
+         -DIPU_VER=$IPU_VERSION \
+         -DBUILD_CAMHAL_TESTS=OFF \
+         -DUSE_PG_LITE_PIPE=ON \
+         ..
   %make_build
   popd
   mv src/platformdata/PlatformData.h.orig src/platformdata/PlatformData.h
@@ -63,7 +68,7 @@ done
 
 
 %install
-for i in ipu6 ipu6ep; do
+for i in ipu_adl ipu_mtl ipu_tgl; do
   pushd $i
   %make_install
   mkdir %{buildroot}%{_libdir}/$i
@@ -79,15 +84,17 @@ rm %{buildroot}%{_libdir}/libcamhal.a
 ln -sf %{_rundir}/libcamhal.so %{buildroot}%{_libdir}/libcamhal.so
 install -p -m 0644 -D %{SOURCE1} %{buildroot}%{_udevrulesdir}/60-intel-ipu6.rules
 
-# Make sure libcamhal.so can be found when building code on systems without an IPU6
-sed -i -e "s|}/lib64|}/lib64/ipu6|" %{buildroot}%{_libdir}/pkgconfig/libcamhal.pc
+# Make sure libcamhal.so can be found when building on systems without an IPU6
+sed -i -e "s|/lib/|/lib64/ipu_tgl/|" %{buildroot}%{_libdir}/pkgconfig/libcamhal.pc
 
 # v4l2-relayd configuration examples
-install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_datadir}/defaults/etc/ipu6ep/v4l2-relayd
-install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_datadir}/defaults/etc/ipu6/v4l2-relayd
+install -p -D -m 0644 %{SOURCE2} %{buildroot}%{_datadir}/defaults/etc/ipu_adl/v4l2-relayd
+install -p -D -m 0644 %{SOURCE3} %{buildroot}%{_datadir}/defaults/etc/ipu_mtl/v4l2-relayd
+install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_datadir}/defaults/etc/ipu_tgl/v4l2-relayd
+
 
 # Make kmod-intel-ipu6 use /dev/video7 leaving /dev/video0 for loopback
-install -p -D -m 0644 %{SOURCE4} %{buildroot}%{_modprobedir}/intel_ipu6_isys.conf
+install -p -D -m 0644 %{SOURCE5} %{buildroot}%{_modprobedir}/intel_ipu6_isys.conf
 
 
 %post
@@ -114,6 +121,10 @@ fi
 
 
 %changelog
+* Tue Oct 10 2023 Matthias Saou <matthias@saou.eu> 0.0-16.20230925git9fa05a9
+- Update to 9fa05a90886d399ad3dda4c2ddc990642b3d20c9.
+- We now have the three ipu_adl ipu_mtl ipu_tgl to take care of.
+
 * Tue Oct 10 2023 Hans de Goede <hdegoede@redhat.com> - 0.0-16.20230208git884b81a
 - Update /lib/modprobe.d/intel_ipu6_isys.conf for newer versions of
   intel-ipu6-kmod creating up to 8 /dev/video# nodes
