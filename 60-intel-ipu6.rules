@@ -1,9 +1,14 @@
-# See intel-ipu6-kmod/ipu6-drivers/drivers/media/pci/intel/ipu.h for device IDs
-SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x9a19", GOTO="ipu_tgl" # Tiger Lake
-SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x465d", GOTO="ipu_adl" # Alder Lake N
-SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x462e", GOTO="ipu_adl" # Alder Lake P
-SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0xa75d", GOTO="ipu_adl" # Raptor Lake P
-SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x7d19", GOTO="ipu_mtl" # Meteor Lake
+# Tiger Lake
+SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x9a19", GOTO="ipu_tgl"
+# Alder Lake-N
+SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x465d", GOTO="ipu_adl"
+# Alder Lake-P
+SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x462e", GOTO="ipu_adl"
+# Raptor Lake-P
+SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0xa75d", GOTO="ipu_adl"
+# Meteor Lake
+SUBSYSTEM=="pci", ATTR{vendor}=="0x8086", ATTR{device}=="0x7d19", GOTO="ipu_mtl"
+
 GOTO="ipu6_end"
 
 LABEL="ipu_tgl"
